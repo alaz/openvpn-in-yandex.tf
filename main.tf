@@ -36,7 +36,7 @@ resource "yandex_compute_instance" "vm" {
   name        = "vm-${random_string.vm_name.result}"
   folder_id   = var.folder_id
   zone        = var.zone
-  platform_id = "standard-v2"
+  platform_id = var.platform_id
 
   allow_stopping_for_update = true
 
