@@ -1,3 +1,5 @@
+# OpenVPN на Yandex Cloud с помощью Terraform
+
 ## Начало
 
 1. Создайте сервисного пользователя
@@ -9,3 +11,16 @@
    Это будет файл `authorized_key.json`, который надо положить сюда в корень
    проекта.
 4. Запустите `$(./init.js)`.
+
+## Создать OpenVPN сервер
+
+```
+terraform plan
+terraform apply
+```
+
+## Удалить всю созданную инфраструктуру
+
+```
+terraform destroy
+```
