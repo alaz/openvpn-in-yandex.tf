@@ -4,7 +4,7 @@ resource "yandex_vpc_network" "network" {
 
 resource "yandex_vpc_subnet" "subnet" {
   folder_id      = var.folder_id
-  zone           = "ru-central1-a"
+  zone           = var.zone
   network_id     = yandex_vpc_network.network.id
   v4_cidr_blocks = ["10.1.0.0/24"]
 }
@@ -46,7 +46,8 @@ resource "yandex_compute_instance" "vm" {
   }
 
   boot_disk {
-    disk_id = yandex_compute_disk.disk.id
+    disk_id     = yandex_compute_disk.disk.id
+    auto_delete = false
   }
 
   network_interface {
@@ -63,15 +64,19 @@ resource "yandex_compute_instance" "vm" {
     ssh-keys = "${random_string.username.result}:${tls_private_key.ssh_key.public_key_openssh}"
   }
 
-  provisioner "local-exec" {
-    command = <<-EOT
-        curl -O https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh
-        chmod +x openvpn-install.sh
-        AUTO_INSTALL=y \
-        ENDPOINT=${self.network_interface[0].nat_ip_address} \
-        CLIENT=${random_string.username.result} \
-        sudo -E ./openvpn-install.sh
-    EOT
+  connection {
+    type        = "ssh"
+    host        = self.network_interface[0].nat_ip_address
+    user        = random_string.username.result
+    private_key = tls_private_key.ssh_key.private_key_openssh
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "curl -O https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh",
+      "chmod +x openvpn-install.sh",
+      "AUTO_INSTALL=y ENDPOINT=${self.network_interface[0].nat_ip_address} CLIENT=${random_string.username.result} sudo -E ./openvpn-install.sh",
+    ]
   }
 }
 
@@ -86,9 +91,12 @@ resource "null_resource" "openvpn_config" {
 
   provisioner "local-exec" {
     command = <<-EOT
-        scp -S 'ssh -l ${random_string.username.result} -i local/${random_string.username.result}.pem' \
-         ${yandex_vpc_address.public_ip.external_ipv4_address[0].address}:${random_string.username.result}.ovpn \
-         .
+        scp \
+          -o UserKnownHostsFile=/dev/null \
+          -o StrictHostKeyChecking=no \
+          -i local/${random_string.username.result}.pem \
+          ${random_string.username.result}@${yandex_vpc_address.public_ip.external_ipv4_address[0].address}:${random_string.username.result}.ovpn \
+          local/
     EOT
   }
 
