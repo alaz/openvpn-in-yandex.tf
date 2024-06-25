@@ -51,6 +51,7 @@ resource "yandex_compute_instance" "vm" {
 
   network_interface {
     subnet_id      = yandex_vpc_subnet.subnet.id
+    nat            = true
     nat_ip_address = yandex_vpc_address.public_ip.external_ipv4_address[0].address
   }
 
@@ -59,15 +60,40 @@ resource "yandex_compute_instance" "vm" {
   }
 
   metadata = {
-    # ssh_keys  = "user:${tls_private_key.ssh_key.public_key_openssh}"
-    user-data = <<-EOT
-      users:
-        - name: user
-            groups: sudo
-            shell: /bin/bash
-            sudo: 'ALL=(ALL) NOPASSWD:ALL'
-            ssh-authorized-keys:
-              - ${tls_private_key.ssh_key.public_key_openssh}
+    ssh-keys = "${random_string.username.result}:${tls_private_key.ssh_key.public_key_openssh}"
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+        curl -O https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh
+        chmod +x openvpn-install.sh
+        AUTO_INSTALL=y \
+        ENDPOINT=${self.network_interface[0].nat_ip_address} \
+        CLIENT=${random_string.username.result} \
+        sudo -E ./openvpn-install.sh
     EOT
+  }
+}
+
+resource "local_sensitive_file" "ssh_private_key" {
+  content         = tls_private_key.ssh_key.private_key_openssh
+  filename        = "local/${random_string.username.result}.pem"
+  file_permission = "0600"
+}
+
+resource "null_resource" "openvpn_config" {
+  depends_on = [yandex_compute_instance.vm]
+
+  provisioner "local-exec" {
+    command = <<-EOT
+        scp -S 'ssh -l ${random_string.username.result} -i local/${random_string.username.result}.pem' \
+         ${yandex_vpc_address.public_ip.external_ipv4_address[0].address}:${random_string.username.result}.ovpn \
+         .
+    EOT
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = "rm -rf local"
   }
 }

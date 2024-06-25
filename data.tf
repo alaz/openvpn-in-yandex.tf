@@ -8,3 +8,10 @@ resource "random_string" "vm_name" {
   upper   = false
   special = false
 }
+
+resource "random_string" "username" {
+  length  = 5
+  upper   = false
+  special = false
+  numeric = false
+}
