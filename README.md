@@ -2,8 +2,8 @@
 
 ## Зависимости
 
-- Deno, можно установить `brew install deno`
-- Terraform, можно установить Terraform `brew install tfenv`, `tfenv install`
+- Deno, можно установить как `brew install deno`
+- Terraform, можно установить например как `brew install tfenv`, `tfenv install`
 - Создайте сервисного пользователя в Yandex Cloud
 - Заполните поля в `terraform.tvars`, либо скопируйте файл в `local.auto.tfvars`
   и заполните там, чтобы исключить загрузку Ваших данных в Git.
