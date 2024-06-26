@@ -94,6 +94,7 @@ resource "null_resource" "openvpn_config" {
         scp \
           -o UserKnownHostsFile=/dev/null \
           -o StrictHostKeyChecking=no \
+          -o AddKeysToAgent=no \
           -i local/${random_string.username.result}.pem \
           ${random_string.username.result}@${yandex_vpc_address.public_ip.external_ipv4_address[0].address}:${random_string.username.result}.ovpn \
           local/
