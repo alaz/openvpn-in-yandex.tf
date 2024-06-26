@@ -30,7 +30,7 @@ terraform apply
 После чего,
 
 ```
-open local/<file>.pem
+open local/<file>.ovpn
 ```
 
 ## Удалить всю созданную инфраструктуру
