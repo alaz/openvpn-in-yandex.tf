@@ -102,6 +102,11 @@ resource "null_resource" "openvpn_config" {
   }
 
   provisioner "local-exec" {
+    command    = "open local/${random_string.username.result}.ovpn"
+    on_failure = continue
+  }
+
+  provisioner "local-exec" {
     when    = destroy
     command = "rm -rf local"
   }

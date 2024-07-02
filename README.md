@@ -27,11 +27,8 @@ $(./init)
 terraform apply
 ```
 
-После чего,
-
-```
-open local/<file>.ovpn
-```
+Финальным шагом скрипт попробует добавить OpenVPN конфигурацию в текущий OpenVPN клиент,
+например [Tunnelblick](https://tunnelblick.net).
 
 ## Удалить всю созданную инфраструктуру
 
