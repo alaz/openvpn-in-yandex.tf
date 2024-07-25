@@ -2,9 +2,11 @@
 
 ## Зависимости
 
-- Deno, можно установить как `brew install deno`
-- Terraform, можно установить например как `brew install tfenv`, `tfenv install`
-- Создайте сервисного пользователя в Yandex Cloud
+- [Deno](https://deno.com), можно установить как `brew install deno`
+- [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli),
+  можно установить например как `brew install tfenv`, `tfenv install`
+- Создайте [сервисного пользователя](https://yandex.cloud/ru/docs/iam/concepts/users/service-accounts)
+  в Yandex Cloud, ему нужно выдать права `compute.admin`, `vpc.admin`.
 - Заполните поля в `terraform.tvars`, либо скопируйте файл в `local.auto.tfvars`
   и заполните там, чтобы исключить загрузку Ваших данных в Git.
 - Получите
