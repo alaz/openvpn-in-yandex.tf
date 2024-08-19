@@ -73,7 +73,8 @@ resource "yandex_compute_instance" "vm" {
 
   provisioner "remote-exec" {
     inline = [
-      "curl -O https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh",
+      # temporarily switch to a fix until https://github.com/angristan/openvpn-install/issues/1241 gets resolved.
+      "curl -O https://raw.githubusercontent.com/ralphg6/openvpn-install/d7cba3c2dca0166d9ad4536b7edcfc56e94780c6/openvpn-install.sh",
       "chmod +x openvpn-install.sh",
       "AUTO_INSTALL=y ENDPOINT=${self.network_interface[0].nat_ip_address} CLIENT=${random_string.username.result} sudo -E ./openvpn-install.sh",
     ]
