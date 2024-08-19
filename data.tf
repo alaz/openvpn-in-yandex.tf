@@ -1,5 +1,5 @@
 data "yandex_compute_image" "image" {
-  family    = "ubuntu-2404-lts-oslogin"
+  family    = "debian-11-oslogin"
   folder_id = "standard-images"
 }
 
