@@ -20,5 +20,5 @@ variable "zone" {
 variable "platform_id" {
   type        = string
   description = "VM platform, see https://yandex.cloud/ru/docs/compute/concepts/vm-platforms"
-  default     = "standard-v3"
+  default     = "standard-v2"
 }
