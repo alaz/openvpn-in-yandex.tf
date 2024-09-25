@@ -22,3 +22,8 @@ variable "platform_id" {
   description = "VM platform, see https://yandex.cloud/ru/docs/compute/concepts/vm-platforms"
   default     = "standard-v2"
 }
+
+variable "install_script_url" {
+  type    = string
+  default = "https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh"
+}
