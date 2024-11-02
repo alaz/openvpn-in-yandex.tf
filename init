@@ -12,11 +12,27 @@
 // References:
 // https://yandex.cloud/ru/docs/iam/operations/iam-token/create-for-sa#node_1
 
+import { exit } from 'node:process';
 import * as jose from 'https://deno.land/x/jose@v5.4.1/index.ts';
+import parseArgs from 'https://deno.land/x/deno_minimist@v1.0.2/mod.ts';
 
 const TOKEN_API = 'https://iam.api.cloud.yandex.net/iam/v1/tokens';
 const EXPIRATION = '1h';
 const ALGORITHM = 'PS256';
+
+const argv = parseArgs(Deno.args, {
+    alias: {
+        h: ['help'],
+    },
+    string: ['log_file'],
+});
+
+if (argv.help) {
+    console.log(`
+$(./init [--log_file=terraform.log])
+`);
+    exit();
+}
 
 // Reading `authorized_key.json` ...
 const authorized = JSON.parse(await Deno.readTextFile('authorized_key.json'));
@@ -43,3 +59,10 @@ const response = await fetch(TOKEN_API, {
 const payload = await response.json();
 
 console.log(`export TF_VAR_token=${payload.iamToken}`);
+
+if (argv.log_file) {
+    console.log(`
+export TF_LOG=INFO
+export TF_LOG_PATH=${argv.log_file}
+`.trim())
+}

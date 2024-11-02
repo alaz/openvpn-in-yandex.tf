@@ -1,4 +1,5 @@
 .DS_Store
+*.log
 *.tfstate
 *.tfstate.backup
 authorized_key.json
