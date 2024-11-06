@@ -18,6 +18,45 @@ resource "yandex_vpc_address" "public_ip" {
   }
 }
 
+resource "yandex_vpc_security_group" "sg" {
+  description = "Security group for ${random_string.vm_name.result}"
+  network_id  = yandex_vpc_network.network.id
+}
+
+resource "yandex_vpc_security_group_rule" "egress_any" {
+  security_group_binding = yandex_vpc_security_group.sg.id
+  direction              = "egress"
+  description            = "Allow all"
+  v4_cidr_blocks         = ["0.0.0.0/0"]
+  from_port              = 0
+  to_port                = 65535
+  protocol               = "Any"
+}
+
+resource "yandex_vpc_security_group_rule" "ingress" {
+  for_each = merge([
+    for id, rule in local.ingress_security_rules : {
+      for proto in rule.protocols : "${id}-${proto}" => {
+        description    = "${rule.description} (${proto})"
+        protocol       = proto
+        v4_cidr_blocks = rule.v4_cidr_blocks
+        port           = try(rule.port, null)
+        from_port      = try(rule.from_port, null)
+        to_port        = try(rule.to_port, null)
+      }
+    }
+  ]...)
+
+  security_group_binding = yandex_vpc_security_group.sg.id
+  direction              = "ingress"
+  description            = each.value.description
+  v4_cidr_blocks         = each.value.v4_cidr_blocks
+  port                   = each.value.port
+  from_port              = each.value.from_port
+  to_port                = each.value.to_port
+  protocol               = each.value.protocol
+}
+
 resource "yandex_compute_disk" "disk" {
   description = "Disk for ${random_string.vm_name.result}"
   folder_id   = var.folder_id
@@ -52,9 +91,10 @@ resource "yandex_compute_instance" "vm" {
   }
 
   network_interface {
-    subnet_id      = yandex_vpc_subnet.subnet.id
-    nat            = true
-    nat_ip_address = yandex_vpc_address.public_ip.external_ipv4_address[0].address
+    subnet_id          = yandex_vpc_subnet.subnet.id
+    nat                = true
+    nat_ip_address     = yandex_vpc_address.public_ip.external_ipv4_address[0].address
+    security_group_ids = [yandex_vpc_security_group.sg.id]
   }
 
   scheduling_policy {
