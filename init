@@ -3,7 +3,7 @@
 // Take "Authorised key" for your service user and place it into this
 // folder as `authorized_key.json`.
 //
-// Run 
+// Run
 //
 // $(./init)
 //
@@ -12,57 +12,57 @@
 // References:
 // https://yandex.cloud/ru/docs/iam/operations/iam-token/create-for-sa#node_1
 
-import { exit } from 'node:process';
-import * as jose from 'https://deno.land/x/jose@v5.4.1/index.ts';
-import parseArgs from 'https://deno.land/x/deno_minimist@v1.0.2/mod.ts';
+import { exit } from "node:process";
+import * as jose from "https://deno.land/x/jose@v5.4.1/index.ts";
+import parseArgs from "https://deno.land/x/deno_minimist@v1.0.2/mod.ts";
 
-const TOKEN_API = 'https://iam.api.cloud.yandex.net/iam/v1/tokens';
-const EXPIRATION = '1h';
-const ALGORITHM = 'PS256';
+const TOKEN_API = "https://iam.api.cloud.yandex.net/iam/v1/tokens";
+const EXPIRATION = "1h";
+const ALGORITHM = "PS256";
 
 const argv = parseArgs(Deno.args, {
-    alias: {
-        h: ['help'],
-    },
-    string: ['log_file'],
+  alias: {
+    h: ["help"],
+  },
+  string: ["log_file"],
 });
 
 if (argv.help) {
-    console.log(`
+  console.log(`
 $(./init [--log_file=terraform.log])
 `);
-    exit();
+  exit();
 }
 
 // Reading `authorized_key.json` ...
-const authorized = JSON.parse(await Deno.readTextFile('authorized_key.json'));
+const authorized = JSON.parse(await Deno.readTextFile("authorized_key.json"));
 
 // Constructing JWT ...
-const privateKeyText = authorized.private_key.replace(/^.*\n/, '');
+const privateKeyText = authorized.private_key.replace(/^.*\n/, "");
 const privateKey = await jose.importPKCS8(privateKeyText, ALGORITHM);
 const jwt = await new jose.SignJWT()
-    .setProtectedHeader({ kid: authorized.id, alg: ALGORITHM })
-    .setIssuedAt()
-    .setIssuer(authorized.service_account_id)
-    .setAudience(TOKEN_API)
-    .setExpirationTime(EXPIRATION)
-    .sign(privateKey);
+  .setProtectedHeader({ kid: authorized.id, alg: ALGORITHM })
+  .setIssuedAt()
+  .setIssuer(authorized.service_account_id)
+  .setAudience(TOKEN_API)
+  .setExpirationTime(EXPIRATION)
+  .sign(privateKey);
 
 // Getting IAM token ...
 const response = await fetch(TOKEN_API, {
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    method: 'POST',
-    body: JSON.stringify({ jwt }),
+  headers: {
+    "Content-Type": "application/json",
+  },
+  method: "POST",
+  body: JSON.stringify({ jwt }),
 });
 const payload = await response.json();
 
 console.log(`export TF_VAR_token=${payload.iamToken}`);
 
 if (argv.log_file) {
-    console.log(`
+  console.log(`
 export TF_LOG=INFO
 export TF_LOG_PATH=${argv.log_file}
-`.trim())
+`.trim());
 }
