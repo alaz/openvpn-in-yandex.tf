@@ -5,7 +5,8 @@
 - [Deno](https://deno.com), можно установить как `brew install deno`
 - [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli),
   можно установить например как `brew install tfenv`, `tfenv install`
-- Создайте [сервисного пользователя](https://yandex.cloud/ru/docs/iam/concepts/users/service-accounts)
+- Создайте
+  [сервисного пользователя](https://yandex.cloud/ru/docs/iam/concepts/users/service-accounts)
   в Yandex Cloud, ему нужно выдать права `compute.admin`, `vpc.admin`.
 - Заполните поля в `terraform.tvars`, либо скопируйте файл в `local.auto.tfvars`
   и заполните там, чтобы исключить загрузку Ваших данных в Git.
@@ -29,8 +30,8 @@ $(./init)
 terraform apply
 ```
 
-Финальным шагом скрипт попробует добавить OpenVPN конфигурацию в текущий OpenVPN клиент,
-например [Tunnelblick](https://tunnelblick.net).
+Финальным шагом скрипт попробует добавить OpenVPN конфигурацию в текущий OpenVPN
+клиент, например [Tunnelblick](https://tunnelblick.net).
 
 ## Удалить всю созданную инфраструктуру
 
