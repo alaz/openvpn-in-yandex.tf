@@ -14,3 +14,4 @@ jobs:
           deno-version: v2.x
       - run: deno fmt --check --ext=ts init
       - run: deno fmt --check
+      - run: terraform fmt -check -recursive -diff .
