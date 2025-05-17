@@ -4,7 +4,8 @@ on:
   pull_request:
 
 jobs:
-  lint:
+  fmt-js:
+    name: Check JS and Markdown formatting
     runs-on: ubuntu-latest
 
     steps:
@@ -14,3 +15,12 @@ jobs:
           deno-version: v2.x
       - run: deno fmt --check --ext=ts init
       - run: deno fmt --check
+
+  fmt-tf:
+    name: Check Terraform formatting
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v3
+      - run: terraform fmt -check -recursive -diff .
