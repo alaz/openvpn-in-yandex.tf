@@ -4,7 +4,7 @@ on:
   pull_request:
 
 jobs:
-  lint:
+  lint-js:
     runs-on: ubuntu-latest
 
     steps:
@@ -14,4 +14,11 @@ jobs:
           deno-version: v2.x
       - run: deno fmt --check --ext=ts init
       - run: deno fmt --check
+
+  lint-tf:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: hashicorp/setup-terraform@v3
       - run: terraform fmt -check -recursive -diff .
