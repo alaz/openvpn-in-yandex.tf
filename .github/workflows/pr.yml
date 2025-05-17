@@ -4,7 +4,8 @@ on:
   pull_request:
 
 jobs:
-  lint-js:
+  fmt-js:
+    name: Check JS and Markdown formatting
     runs-on: ubuntu-latest
 
     steps:
@@ -15,7 +16,8 @@ jobs:
       - run: deno fmt --check --ext=ts init
       - run: deno fmt --check
 
-  lint-tf:
+  fmt-tf:
+    name: Check Terraform formatting
     runs-on: ubuntu-latest
 
     steps:
