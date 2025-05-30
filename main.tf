@@ -102,7 +102,16 @@ resource "yandex_compute_instance" "vm" {
   }
 
   metadata = {
-    ssh-keys = "${random_string.username.result}:${tls_private_key.ssh_key.public_key_openssh}"
+    user-data = <<-EOT
+      #cloud-config
+      ssh_pwauth: no
+      users:
+      - name: ${random_string.username.result}
+        sudo: 'ALL=(ALL) NOPASSWD:ALL'
+        shell: '/bin/bash'
+        ssh_authorized_keys:
+        - '${tls_private_key.ssh_key.public_key_openssh}'
+    EOT
   }
 
   connection {
@@ -122,9 +131,9 @@ resource "yandex_compute_instance" "vm" {
 }
 
 resource "local_sensitive_file" "ssh_private_key" {
-  content         = tls_private_key.ssh_key.private_key_openssh
   filename        = "local/${random_string.username.result}.pem"
   file_permission = "0600"
+  content         = tls_private_key.ssh_key.private_key_openssh
 }
 
 resource "null_resource" "openvpn_config" {
