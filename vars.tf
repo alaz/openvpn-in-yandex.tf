@@ -17,12 +17,6 @@ variable "zone" {
   default = "ru-central1-d"
 }
 
-variable "platform_id" {
-  type        = string
-  description = "VM platform, see https://yandex.cloud/ru/docs/compute/concepts/vm-platforms"
-  default     = "standard-v2"
-}
-
 variable "install_script_url" {
   type    = string
   default = "https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh"

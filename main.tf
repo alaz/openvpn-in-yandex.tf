@@ -72,17 +72,15 @@ resource "tls_private_key" "ssh_key" {
 }
 
 resource "yandex_compute_instance" "vm" {
-  name        = "vm-${random_string.vm_name.result}"
-  folder_id   = var.folder_id
-  zone        = var.zone
-  platform_id = var.platform_id
+  name      = "vm-${random_string.vm_name.result}"
+  folder_id = var.folder_id
+  zone      = var.zone
 
-  allow_stopping_for_update = true
-
+  platform_id = "standard-v2"
   resources {
     cores         = 2
-    memory        = 2
-    core_fraction = 20
+    memory        = 0.5
+    core_fraction = 5
   }
 
   boot_disk {
@@ -100,6 +98,8 @@ resource "yandex_compute_instance" "vm" {
   scheduling_policy {
     preemptible = true
   }
+
+  allow_stopping_for_update = true
 
   metadata = {
     user-data = <<-EOT
