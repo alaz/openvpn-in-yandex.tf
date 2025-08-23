@@ -96,7 +96,7 @@ resource "yandex_compute_instance" "vm" {
   }
 
   scheduling_policy {
-    preemptible = true
+    preemptible = var.preemptible
   }
 
   allow_stopping_for_update = true

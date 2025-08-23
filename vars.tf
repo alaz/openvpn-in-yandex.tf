@@ -17,6 +17,11 @@ variable "zone" {
   default = "ru-central1-d"
 }
 
+variable "preemptible" {
+  type    = bool
+  default = true
+}
+
 variable "install_script_url" {
   type    = string
   default = "https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh"
