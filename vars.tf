@@ -27,6 +27,11 @@ variable "install_script_url" {
   default = "https://raw.githubusercontent.com/angristan/openvpn-install/master/openvpn-install.sh"
 }
 
+variable "packages" {
+  type    = list(string)
+  default = []
+}
+
 locals {
   ingress_security_rules = {
     "ssh" = {

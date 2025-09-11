@@ -111,6 +111,11 @@ resource "yandex_compute_instance" "vm" {
         shell: '/bin/bash'
         ssh_authorized_keys:
         - '${tls_private_key.ssh_key.public_key_openssh}'
+      swap:
+        filename: /swapfile
+        size: 2147483648
+      package_update: true
+      packages: ${join(",", var.packages)}
     EOT
   }
 
