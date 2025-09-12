@@ -62,7 +62,7 @@ resource "yandex_compute_disk" "disk" {
   folder_id   = var.folder_id
   zone        = var.zone
   image_id    = data.yandex_compute_image.image.id
-  size        = 10
+  size        = data.yandex_compute_image.image.min_disk_size
   type        = "network-hdd"
 }
 
